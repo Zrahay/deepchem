@@ -101,7 +101,6 @@ class Dnabert(HuggingFaceModel):
         model: PreTrainedModel
         dnabert_config = AutoConfig.from_pretrained(tokenizer_path,
                                                     trust_remote_code=True)
-        dnabert_config.pad_token_id = tokenizer.pad_token_id
         dnabert_config.is_decoder = False
         if task == 'mlm':
             model = AutoModelForMaskedLM.from_config(dnabert_config,
