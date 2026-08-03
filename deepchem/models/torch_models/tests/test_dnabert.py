@@ -79,14 +79,14 @@ def test_dnabert_load_from_pretrained(tmpdir, genomic_regression_dataset):
     tokenizer_path = 'IronHead44/DNABERT-2-117M'
     pretrain_model = Dnabert(task='mlm',
                              tokenizer_path=tokenizer_path,
-                             model_dir=pretrain_model_dir
-                             )
+                             model_dir=pretrain_model_dir)
     pretrain_model.save_checkpoint()
 
-    finetune_model = Dnabert(task='regression',
-                             tokenizer_path=tokenizer_path,
-                             model_dir=finetune_model_dir,
-                             )
+    finetune_model = Dnabert(
+        task='regression',
+        tokenizer_path=tokenizer_path,
+        model_dir=finetune_model_dir,
+    )
     finetune_model.load_from_pretrained(pretrain_model_dir)
 
     # check weights match
@@ -108,17 +108,19 @@ def test_dnabert_load_from_pretrained(tmpdir, genomic_regression_dataset):
 @pytest.mark.hf
 def test_dnabert_save_reload(tmpdir):
     tokenizer_path = 'IronHead44/DNABERT-2-117M'
-    model = Dnabert(task='regression',
-                    tokenizer_path=tokenizer_path,
-                    model_dir=tmpdir,
-                    )
+    model = Dnabert(
+        task='regression',
+        tokenizer_path=tokenizer_path,
+        model_dir=tmpdir,
+    )
     model._ensure_built()
     model.save_checkpoint()
 
-    model_new = Dnabert(task='regression',
-                        tokenizer_path=tokenizer_path,
-                        model_dir=tmpdir,
-                        )
+    model_new = Dnabert(
+        task='regression',
+        tokenizer_path=tokenizer_path,
+        model_dir=tmpdir,
+    )
     model_new.restore()
 
     old_state = model.model.state_dict()
@@ -166,8 +168,7 @@ def test_dnabert_finetuning_multitask_classification(pretrained_checkpoint_dir):
 
     model = Dnabert(task='classification',
                     tokenizer_path=tokenizer_path,
-                    n_tasks=10
-                    )
+                    n_tasks=10)
     model.load_from_pretrained(pretrained_checkpoint_dir)
     loss = model.fit(dataset, nb_epoch=1)
     eval_score = model.evaluate(dataset,
@@ -234,8 +235,7 @@ def test_dnabert_overfit_finetuning_classification(pretrained_checkpoint_dir):
     model = Dnabert(task='classification',
                     tokenizer_path=tokenizer_path,
                     n_tasks=1,
-                    learning_rate=1e-4
-                    )
+                    learning_rate=1e-4)
     model.load_from_pretrained(pretrained_checkpoint_dir)
     model.fit(dataset=dataset, nb_epoch=600)
     classification_metric = dc.metrics.Metric(dc.metrics.accuracy_score)
@@ -260,8 +260,7 @@ def test_dnabert_overfit_finetuning_regression(pretrained_checkpoint_dir):
     model = Dnabert(task='regression',
                     tokenizer_path=tokenizer_path,
                     n_tasks=1,
-                    learning_rate=1e-4
-                    )
+                    learning_rate=1e-4)
     model.load_from_pretrained(pretrained_checkpoint_dir)
     model.fit(dataset=dataset, nb_epoch=500)
     regression_metric = dc.metrics.Metric(dc.metrics.mean_squared_error)
