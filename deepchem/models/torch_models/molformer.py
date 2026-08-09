@@ -88,17 +88,20 @@ class MoLFormer(HuggingFaceModel):
             revision='7b12d94')
         if task == 'mlm':
             model = AutoModelForMaskedLM.from_config(molformer_config,
-                                                     trust_remote_code=True)
+                                                     trust_remote_code=True,
+                                                     code_revision='7b12d94')
         elif task == 'mtr':
             molformer_config.problem_type = 'regression'
             molformer_config.num_labels = n_tasks
             model = AutoModelForSequenceClassification.from_config(
-                config=molformer_config, trust_remote_code=True)
+                config=molformer_config, trust_remote_code=True,
+                code_revision='7b12d94')
         elif task == 'regression':
             molformer_config.problem_type = 'regression'
             molformer_config.num_labels = n_tasks
             model = AutoModelForSequenceClassification.from_config(
-                config=molformer_config, trust_remote_code=True)
+                config=molformer_config, trust_remote_code=True,
+                code_revision='7b12d94')
         elif task == 'classification':
             if n_tasks == 1:
                 molformer_config.problem_type = 'single_label_classification'
@@ -106,7 +109,8 @@ class MoLFormer(HuggingFaceModel):
                 molformer_config.num_labels = n_tasks
                 molformer_config.problem_type = 'multi_label_classification'
             model = AutoModelForSequenceClassification.from_config(
-                molformer_config, trust_remote_code=True)
+                molformer_config, trust_remote_code=True,
+                code_revision='7b12d94')
         else:
             raise ValueError('invalid task specification')
 
