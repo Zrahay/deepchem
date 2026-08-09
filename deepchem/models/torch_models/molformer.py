@@ -81,9 +81,11 @@ class MoLFormer(HuggingFaceModel):
                  **kwargs):
         self.n_tasks = n_tasks
         tokenizer = AutoTokenizer.from_pretrained(tokenizer_path,
-                                                  trust_remote_code=True)
+                                                  trust_remote_code=True,
+                                                  revision='7b12d94')
         molformer_config = AutoConfig.from_pretrained(
-            "ibm/MoLFormer-XL-both-10pct", trust_remote_code=True)
+            "ibm/MoLFormer-XL-both-10pct", trust_remote_code=True,
+            revision='7b12d94')
         if task == 'mlm':
             model = AutoModelForMaskedLM.from_config(molformer_config,
                                                      trust_remote_code=True)
