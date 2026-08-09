@@ -340,31 +340,27 @@ def test_load_molformer_model_from_hf_checkpoint(tmpdir):
     finetune_model = dc.models.torch_models.MoLFormer(task='classification',
                                                       n_tasks=5)
     finetune_model.load_from_pretrained(model_dir=temp_file_path,
-                                        from_hf_checkpoint=True,
-                                        code_revision='7b12d94')
+                                        from_hf_checkpoint=True)
     assert finetune_model.model.config.problem_type == 'multi_label_classification'
     assert finetune_model.model.config.num_labels == 5
 
     finetune_model = dc.models.torch_models.MoLFormer(task='classification',
                                                       n_tasks=1)
     finetune_model.load_from_pretrained(model_dir=temp_file_path,
-                                        from_hf_checkpoint=True,
-                                        code_revision='7b12d94')
+                                        from_hf_checkpoint=True)
     assert finetune_model.model.config.problem_type == 'single_label_classification'
     assert finetune_model.model.config.num_labels == 2
 
     finetune_model = dc.models.torch_models.MoLFormer(task='regression',
                                                       n_tasks=5)
     finetune_model.load_from_pretrained(model_dir=temp_file_path,
-                                        from_hf_checkpoint=True,
-                                        code_revision='7b12d94')
+                                        from_hf_checkpoint=True)
     assert finetune_model.model.config.problem_type == 'regression'
     assert finetune_model.model.config.num_labels == 5
 
     finetune_model = dc.models.torch_models.MoLFormer(task='regression',
                                                       n_tasks=1)
     finetune_model.load_from_pretrained(model_dir=temp_file_path,
-                                        from_hf_checkpoint=True,
-                                        code_revision='7b12d94')
+                                        from_hf_checkpoint=True)
     assert finetune_model.model.config.problem_type == 'regression'
     assert finetune_model.model.config.num_labels == 1
