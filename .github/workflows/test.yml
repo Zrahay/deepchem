@@ -182,6 +182,32 @@ jobs:
       id: install
       shell: bash -l {0}
       run: pip install -e .
+    - name: Debug SSL info
+      if: ${{ runner.os == 'Windows' }}
+      shell: bash -l {0}
+      run: |
+        python -c "
+        import ssl
+        import sys
+        print('Python version:', sys.version)
+        print('OpenSSL version:', ssl.OPENSSL_VERSION)
+        print('OpenSSL version info:', ssl.OPENSSL_VERSION_INFO)
+        print()
+        print('Enumerating Windows CA certificates...')
+        from ssl import enum_certificates
+        bad_certs = []
+        for i, (cert, encoding, trust) in enumerate(enum_certificates('CA')):
+            if encoding == 'x509_asn':
+                try:
+                    ctx = ssl.SSLContext()
+                    ctx.load_verify_locations(cadata=cert)
+                except ssl.SSLError as e:
+                    bad_certs.append((i, str(e), cert[:20]))
+        print(f'Total CA certs with x509_asn encoding checked')
+        print(f'Bad certs that cause SSLError: {len(bad_certs)}')
+        for idx, err, preview in bad_certs:
+            print(f'  Cert #{idx}: {err} (first 20 bytes: {preview.hex()})')
+        "
     - name: Doctest Linux
       if: ${{ (runner.os == 'Linux') && always() }}
       shell: bash -l {0}
