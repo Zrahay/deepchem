@@ -154,7 +154,7 @@ def test_weave_regression_model():
                        mode='regression',
                        dropouts=0,
                        learning_rate=0.00003)
-    model.fit(dataset, nb_epoch=400)
+    model.fit(dataset, nb_epoch=600)
     scores = model.evaluate(dataset, [metric], transformers)
     assert scores['mean_absolute_error'] < 0.1
 
