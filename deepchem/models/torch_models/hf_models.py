@@ -243,24 +243,33 @@ class HuggingFaceModel(TorchModel):
                 remote_code_kwargs['code_revision'] = self._code_revision
             if self.task == 'mlm':
                 self.model = AutoModelForMaskedLM.from_pretrained(
-                    model_dir, trust_remote_code=True, **remote_code_kwargs,
+                    model_dir,
+                    trust_remote_code=True,
+                    **remote_code_kwargs,
                     **self.config)
             elif self.task in ['mtr', 'regression', 'classification']:
                 self.model = AutoModelForSequenceClassification.from_pretrained(
-                    model_dir, trust_remote_code=True, **remote_code_kwargs,
+                    model_dir,
+                    trust_remote_code=True,
+                    **remote_code_kwargs,
                     **self.config)
             elif self.task == "universal_segmentation":
                 self.model = AutoModelForUniversalSegmentation.from_pretrained(
-                    model_dir, trust_remote_code=True, **remote_code_kwargs,
+                    model_dir,
+                    trust_remote_code=True,
+                    **remote_code_kwargs,
                     **self.config)
             elif self.task == 'causal_lm':
                 self.model = AutoModelForCausalLM.from_pretrained(
-                    model_dir, trust_remote_code=True, **remote_code_kwargs,
+                    model_dir,
+                    trust_remote_code=True,
+                    **remote_code_kwargs,
                     **self.config)
             else:
-                self.model = AutoModel.from_pretrained(
-                    model_dir, trust_remote_code=True, **remote_code_kwargs,
-                    **self.config)
+                self.model = AutoModel.from_pretrained(model_dir,
+                                                       trust_remote_code=True,
+                                                       **remote_code_kwargs,
+                                                       **self.config)
         elif not from_hf_checkpoint:
             checkpoints = sorted(self.get_checkpoints(model_dir))
             if len(checkpoints) == 0:
