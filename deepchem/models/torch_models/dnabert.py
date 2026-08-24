@@ -94,6 +94,7 @@ class Dnabert(HuggingFaceModel):
                  task: str,
                  tokenizer_path: str = 'IronHead44/DNABERT-2-117M',
                  n_tasks: int = 1,
+                 num_labels: int = 2,
                  **kwargs):
         self.n_tasks = n_tasks
         tokenizer = AutoTokenizer.from_pretrained(tokenizer_path,
@@ -102,6 +103,15 @@ class Dnabert(HuggingFaceModel):
         dnabert_config = AutoConfig.from_pretrained(tokenizer_path,
                                                     trust_remote_code=True)
         dnabert_config.is_decoder = False
+
+        # Force PyTorch attention fallback when CUDA is not available.
+        # MosaicBERT's Triton-based Flash Attention requires CUDA tensors.
+        # Setting attention_probs_dropout_prob > 0 triggers the standard
+        # PyTorch attention path in bert_layers.py, avoiding the
+        # 'assert q.is_cuda' error in flash_attn_triton.py.
+        if not torch.cuda.is_available():
+            dnabert_config.attention_probs_dropout_prob = 1e-7
+
         if task == 'mlm':
             model = AutoModelForMaskedLM.from_config(dnabert_config,
                                                      trust_remote_code=True)
@@ -118,7 +128,7 @@ class Dnabert(HuggingFaceModel):
         elif task == 'classification':
             if n_tasks == 1:
                 dnabert_config.problem_type = 'single_label_classification'
-                dnabert_config.num_labels = 2
+                dnabert_config.num_labels = num_labels
             else:
                 dnabert_config.problem_type = 'multi_label_classification'
                 dnabert_config.num_labels = n_tasks
@@ -146,6 +156,8 @@ class Dnabert(HuggingFaceModel):
         genomic_batch, y, w = batch
         tokens = self.tokenizer(genomic_batch[0].tolist(),
                                 padding=True,
+                                truncation=True,
+                                max_length=512,
                                 return_tensors="pt")
 
         if self.task == 'mlm':
